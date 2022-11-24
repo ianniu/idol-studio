@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "a3",
-    "slug": "a3",
+    "name": "idol-studio",
+    "slug": "idol-studio",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

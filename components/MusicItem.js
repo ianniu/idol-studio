@@ -1,68 +1,62 @@
-import { View, Text, StyleSheet, Pressable } from "react-native";
-import React from "react";
-import Colors from '../styles/Colors';
+import { View, Text, StyleSheet, Dimensions, Pressable } from "react-native"
+import React from "react"
+import { Colors } from "../styles/Styles"
+import { Ionicons, Feather } from "@expo/vector-icons"
 
-export default function MusicItem({ music, onItemPress }) {
+const WIDTH = Dimensions.get("window").width
+
+export default function MusicItem(props) {
+  const { item } = props
+
   return (
-    <View style={styles.musicTextContainer}>
-      <Pressable
-        onPress={() => {
-          onItemPress(music);
-        }}
-        android_ripple={{ color: Colors.ripple, foreground: true }}
-        style={(obj) => {
-          return obj.pressed && styles.pressedItem;
-        }}
-      >
-        <View style={styles.musicWrapper}>
-          <View style={styles.textWrapper}>
-            <Text style={styles.musicText}> {music.text} </Text>
-          </View>
-          <View style={styles.numberWrapper}>
-            <Text style={styles.musicAmount}></Text>
-          </View>
-        </View>
-      </Pressable>
-    </View>
-  );
+    <Pressable
+      style={({ pressed }) => [
+        styles.container,
+        { backgroundColor: pressed ? Colors.greyTransparent : Colors.black1 },
+      ]}
+    >
+      <View style={styles.textWrapper}>
+        <Text style={styles.name}>{item.name}</Text>
+        <Text style={styles.singer}>{item.singer}</Text>
+      </View>
+      <View style={styles.iconsWrapper}>
+        <Pressable>
+          <Ionicons name="heart-outline" size={24} color={Colors.white1} />
+        </Pressable>
+        <Pressable style={{ marginLeft: 30 }}>
+          <Feather name="plus" size={24} color={Colors.white1} />
+        </Pressable>
+      </View>
+    </Pressable>
+  )
 }
 
 const styles = StyleSheet.create({
-  musicTextContainer: {
-    margin: 8,
-    borderRadius: 5,
-    backgroundColor: Colors.lightBlack,
+  container: {
+    display: "flex",
+    minHeight: 80,
+    backgroundColor: Colors.grey1,
     flexDirection: "row",
-    justifyContent: "space-evenly",
+    justifyContent: "space-between",
+    width: Math.floor(WIDTH) - 10,
     alignItems: "center",
   },
   textWrapper: {
-    flex: 3,
+    display: "flex",
+    flexDirection: "column",
   },
-  musicText: {
-    fontSize: 18,
-    color: Colors.white,
-    padding: 12,
+  name: {
+    color: Colors.white1,
+    fontSize: 24,
+    fontWeight: "600",
   },
-  numberWrapper: {
-    flex: 1,
-    backgroundColor: Colors.lightBlack,
-    margin: 3,
-    borderRadius: 5,
+  singer: {
+    color: Colors.white1,
+    fontSize: 20,
+    fontWeight: "300",
   },
-  musicAmount: {
-    fontSize: 18,
-    color: Colors.white,
-    padding: 12,
-    textAlign: 'center',
+  iconsWrapper: {
+    display: "flex",
+    flexDirection: "row",
   },
-  pressedItem: {
-    backgroundColor: Colors.pressed,
-    opacity: 0.5,
-    borderRadius: 5,
-  },
-  musicWrapper: {
-    flexDirection: 'row',
-    width: 350,
-  },
-});
+})

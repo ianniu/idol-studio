@@ -8,7 +8,7 @@ import {
   FlatList,
 } from "react-native"
 import React, { useState } from "react"
-import { Colors } from "../Styles"
+import { Colors } from "../styles/Styles"
 import { Ionicons } from "@expo/vector-icons"
 import MusicItem from "./MusicItem"
 

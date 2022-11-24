@@ -1,6 +1,6 @@
 import { View, Text, SafeAreaView, StyleSheet } from "react-native"
 import React from "react"
-import { Colors } from "../Styles"
+import { Colors } from "../styles/Styles"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import Home from "./Home"
 import Playlist from "./Playlist"

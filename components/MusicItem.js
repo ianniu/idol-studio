@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Dimensions, Pressable } from "react-native"
 import React from "react"
-import { Colors } from "../Styles"
+import { Colors } from "../styles/Styles"
 import { Ionicons, Feather } from "@expo/vector-icons"
 
 const WIDTH = Dimensions.get("window").width

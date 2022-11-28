@@ -16,8 +16,8 @@ export default function MusicItem(props) {
       ]}
     >
       <View style={styles.textWrapper}>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.singer}>{item.singer}</Text>
+        <Text style={styles.title}>{item.title}</Text>
+        <Text style={styles.artist}>{item.artist}</Text>
       </View>
       <View style={styles.iconsWrapper}>
         <Pressable>
@@ -45,12 +45,12 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
   },
-  name: {
+  title: {
     color: Colors.white1,
     fontSize: 24,
     fontWeight: "600",
   },
-  singer: {
+  artist: {
     color: Colors.white1,
     fontSize: 20,
     fontWeight: "300",

@@ -7,26 +7,38 @@ import {
   Pressable,
   FlatList,
 } from "react-native"
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Colors } from "../styles/Styles"
 import { Ionicons } from "@expo/vector-icons"
 import MusicItem from "./MusicItem"
-
-const musicInfo = [
-  {
-    id: "1",
-    name: "Into the unknown",
-    singer: "Luzao",
-  },
-  {
-    id: "2",
-    name: "Reflection",
-    singer: "Luzao",
-  },
-]
+import { collection, onSnapshot } from "firebase/firestore"
+import { firestore } from "../firebase/firebase-setup"
 
 export default function Home() {
   const [searchText, setSearchText] = useState()
+  const [songs, setSongs] = useState([])
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(firestore, "musics"),
+      (querySnapshot) => {
+        if (querySnapshot.empty) {
+          setSongs([])
+        } else {
+          setSongs(
+            querySnapshot.docs.map((snapDoc) => {
+              let data = snapDoc.data()
+              data = { ...data, id: snapDoc.id }
+              return data
+            })
+          )
+        }
+      }
+    )
+
+    return unsubscribe
+  }, [])
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.searchWrapper}>
@@ -42,7 +54,7 @@ export default function Home() {
       </View>
       <View style={styles.musicListWrapper}>
         <FlatList
-          data={musicInfo}
+          data={songs}
           renderItem={(item, index, separators) => (
             <MusicItem item={item.item} />
           )}

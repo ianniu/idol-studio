@@ -10,6 +10,7 @@ const Stack = createNativeStackNavigator()
 export default function App() {
   return (
     <SafeAreaProvider>
+      <StatusBar style="light" />
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
@@ -19,7 +20,6 @@ export default function App() {
           />
         </Stack.Navigator>
       </NavigationContainer>
-      <StatusBar style="light" />
     </SafeAreaProvider>
   )
 }

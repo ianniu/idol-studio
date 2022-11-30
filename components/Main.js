@@ -1,14 +1,19 @@
-import { View, Text, SafeAreaView, StyleSheet } from "react-native"
+import { StyleSheet, Text, View, Dimensions } from "react-native"
 import React from "react"
 import { Colors } from "../styles/Styles"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import Home from "./Home"
 import Playlist from "./Playlist"
 import { Ionicons } from "@expo/vector-icons"
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
+import { StatusBar } from "expo-status-bar"
 
 const Tab = createBottomTabNavigator()
 
+const HEIGHT = Dimensions.get("window").height
+
 export default function Main() {
+  const insets = useSafeAreaInsets()
   return (
     <SafeAreaView style={styles.container}>
       <Tab.Navigator
@@ -35,7 +40,18 @@ export default function Main() {
       >
         <Tab.Screen name="Home" component={Home} options={({ route }) => {}} />
         <Tab.Screen name="Playlist" component={Playlist} />
+        <></>
       </Tab.Navigator>
+      <View
+        style={{
+          position: "absolute",
+          transform: [
+            { translateY: HEIGHT - (insets.bottom + insets.top) - 34 },
+          ],
+        }}
+      >
+        <Text style={{ color: "white" }}>test</Text>
+      </View>
     </SafeAreaView>
   )
 }

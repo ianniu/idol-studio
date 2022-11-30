@@ -3,6 +3,8 @@ import { StyleSheet, Text, View } from "react-native"
 import { NavigationContainer } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import Main from "./components/Main"
+import Login from "./components/Login"
+import Signup from "./components/Signup"
 import { SafeAreaProvider } from "react-native-safe-area-context"
 
 const Stack = createNativeStackNavigator()
@@ -15,6 +17,16 @@ export default function App() {
           <Stack.Screen
             name="Main"
             component={Main}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Login"
+            component={Login}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Signup"
+            component={Signup}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

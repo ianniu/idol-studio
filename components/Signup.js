@@ -1,35 +1,35 @@
-import { View, Text, TextInput, StyleSheet, Button, Alert } from "react-native";
-import React, { useState } from "react";
-import { auth } from "../firebase/firebase-setup";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { View, Text, TextInput, StyleSheet, Button, Alert } from "react-native"
+import React, { useState } from "react"
+import { auth } from "../firebase/firebase-setup"
+import { createUserWithEmailAndPassword } from "firebase/auth"
 import { Colors } from "../styles/Styles"
 
 export default function Signup({ navigation }) {
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
-  const [confirmpassword, setConfirmPassword] = useState(null);
+  const [email, setEmail] = useState(null)
+  const [password, setPassword] = useState(null)
+  const [confirmpassword, setConfirmPassword] = useState(null)
   const handleSignup = async () => {
     // some check here
     if (password.length < 6) {
-      Alert.alert("The password needs to be minimum 6 characters");
-      return;
+      Alert.alert("The password needs to be minimum 6 characters")
+      return
     }
     if (password !== confirmpassword) {
-      Alert.alert("The password and confirmed password don't match");
-      return;
+      Alert.alert("The password and confirmed password don't match")
+      return
     }
     try {
       const userCred = await createUserWithEmailAndPassword(
         auth,
         email,
         password
-      );
-      console.log(userCred);
+      )
+      console.log(userCred)
     } catch (err) {
-      console.log(err);
+      console.log(err)
     }
-    navigation.navigate("Home");
-  };
+    navigation.navigate("Home")
+  }
 
   return (
     <View style={styles.authContent}>
@@ -39,6 +39,7 @@ export default function Signup({ navigation }) {
         onChangeText={(newEmail) => setEmail(newEmail)}
         value={email}
         keyboardType="email-address"
+        autoCapitalize="none"
       />
       <Text style={styles.label}>Password</Text>
       <TextInput
@@ -46,6 +47,7 @@ export default function Signup({ navigation }) {
         secureTextEntry={true}
         onChangeText={(newPass) => setPassword(newPass)}
         value={password}
+        autoCapitalize="none"
       />
       <Text style={styles.label}>Confirm password</Text>
       <TextInput
@@ -53,6 +55,7 @@ export default function Signup({ navigation }) {
         secureTextEntry={true}
         onChangeText={(newPass) => setConfirmPassword(newPass)}
         value={confirmpassword}
+        autoCapitalize="none"
       />
       <Button title="Register" onPress={handleSignup} />
       <Button
@@ -60,7 +63,7 @@ export default function Signup({ navigation }) {
         onPress={() => navigation.replace("Login")}
       />
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -87,4 +90,4 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     color: Colors.white1,
   },
-});
+})

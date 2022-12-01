@@ -1,23 +1,21 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  StyleSheet,
-  TextInput,
-  Pressable,
-  FlatList,
-} from "react-native"
+import { View, StyleSheet, TextInput, Pressable, FlatList } from "react-native"
 import React, { useState, useEffect } from "react"
 import { Colors } from "../styles/Styles"
 import { Ionicons } from "@expo/vector-icons"
 import MusicItem from "./MusicItem"
 import { collection, onSnapshot } from "firebase/firestore"
 import { firestore } from "../firebase/firebase-setup"
+import { StatusBar } from "expo-status-bar"
+import { SafeAreaView } from "react-native-safe-area-context"
+import { useDispatch } from "react-redux"
+import { setTrack, setCurrentIdx, setCurrentMusic } from "./Player/playerSlice"
 
 export default function Home() {
   const [searchText, setSearchText] = useState()
   const [songs, setSongs] = useState([])
+  const dispatch = useDispatch()
 
+  // get musics
   useEffect(() => {
     const unsubscribe = onSnapshot(
       collection(firestore, "musics"),
@@ -39,8 +37,15 @@ export default function Home() {
     return unsubscribe
   }, [])
 
+  const onPressMusicItem = (item, index) => {
+    dispatch(setTrack(songs))
+    dispatch(setCurrentIdx(index))
+    dispatch(setCurrentMusic(item))
+  }
+
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar style="light" />
       <View style={styles.searchWrapper}>
         <TextInput style={styles.searchInput} onChangeText={setSearchText} />
         <Pressable
@@ -55,8 +60,19 @@ export default function Home() {
       <View style={styles.musicListWrapper}>
         <FlatList
           data={songs}
-          renderItem={(item, index, separators) => (
-            <MusicItem item={item.item} />
+          renderItem={({ item, index, separators }) => (
+            <Pressable
+              style={({ pressed }) => [
+                {
+                  backgroundColor: pressed
+                    ? Colors.greyTransparent
+                    : Colors.black1,
+                },
+              ]}
+              onPress={() => onPressMusicItem(item, index)}
+            >
+              <MusicItem item={item} />
+            </Pressable>
           )}
           keyExtractor={(item) => item.id}
         />

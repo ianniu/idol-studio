@@ -1,22 +1,22 @@
-import { View, Text, TextInput, StyleSheet, Button, Alert } from "react-native";
-import React, { useState } from "react";
-import { auth } from "../firebase/firebase-setup";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { View, Text, TextInput, StyleSheet, Button, Alert } from "react-native"
+import React, { useState } from "react"
+import { auth } from "../firebase/firebase-setup"
+import { signInWithEmailAndPassword } from "firebase/auth"
 import { Colors } from "../styles/Styles"
 
 export default function Login({ navigation }) {
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
+  const [email, setEmail] = useState(null)
+  const [password, setPassword] = useState(null)
   const handleLogin = async () => {
     try {
-      const userCred = await signInWithEmailAndPassword(auth, email, password);
-      console.log(userCred);
+      const userCred = await signInWithEmailAndPassword(auth, email, password)
+      console.log(userCred)
     } catch (err) {
-      Alert.alert(err.message);
-      console.log(err.message);
+      Alert.alert(err.message)
+      console.log(err.message)
     }
-    navigation.navigate("Home");
-  };
+    navigation.navigate("Playlist")
+  }
   return (
     <View style={styles.authContent}>
       <Text style={styles.label}>Email Address</Text>
@@ -25,6 +25,7 @@ export default function Login({ navigation }) {
         onChangeText={(newEmail) => setEmail(newEmail)}
         value={email}
         keyboardType="email-address"
+        autoCapitalize="none"
       />
       <Text style={styles.label}>password</Text>
       <TextInput
@@ -32,6 +33,7 @@ export default function Login({ navigation }) {
         secureTextEntry={true}
         onChangeText={(newPass) => setPassword(newPass)}
         value={password}
+        autoCapitalize="none"
       />
       <View style={styles.button}>
         <Button title="Log In" onPress={handleLogin} />
@@ -43,7 +45,7 @@ export default function Login({ navigation }) {
         />
       </View>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -73,4 +75,4 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 5,
   },
-});
+})

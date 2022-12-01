@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar"
-import { StyleSheet, View, SafeAreaView, FlatList, Button, Text } from "react-native"
+import { StyleSheet, View, SafeAreaView, FlatList, Button, Image, Text, Pressable } from "react-native"
 import { useState, useEffect } from "react"
 import PlaylistItem from "./PlaylistItem"
 import { firestore, auth } from "../firebase/firebase-setup"
@@ -8,6 +8,7 @@ import { Colors } from "../styles/Styles"
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
 export default function PlayList({ route, navigation }) {
+  const [imageUri, setImageUri] = useState("https://user-images.githubusercontent.com/67746875/204928445-af19dc91-ed83-4aae-9351-cd096b5bac67.png");
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
   const fakeData = [{ text: "Viva La Vida" }]
   const [music, setMusic] = useState([])
@@ -53,14 +54,18 @@ export default function PlayList({ route, navigation }) {
   const signup = () => {
     navigation.navigate("Signup");
   }
+  const gotoProfile = () => {
+    navigation.navigate("Profile");
+  }
 
-  console.log(isUserAuthenticated)
-  
   return (
     <SafeAreaView style={styles.container}>
       
       {isUserAuthenticated ? (
         <>
+          <Pressable onPress={gotoProfile}>
+            <Image source={{ uri: imageUri }} style={{ width: 100, height: 100 }} />
+          </Pressable>
           <View style={styles.bottomContainer}>
             <FlatList
               data={fakeData}

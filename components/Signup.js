@@ -26,6 +26,7 @@ export default function Signup({ navigation }) {
     } catch (err) {
       console.log(err);
     }
+    navigation.navigate("Home");
   };
 
   return (

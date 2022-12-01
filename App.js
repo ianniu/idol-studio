@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import Main from "./components/Main"
 import Login from "./components/Login"
 import Signup from "./components/Signup"
+import Profile from "./components/Profile"
 import { SafeAreaProvider } from "react-native-safe-area-context"
 
 const Stack = createNativeStackNavigator()
@@ -22,12 +23,14 @@ export default function App() {
           <Stack.Screen
             name="Login"
             component={Login}
-            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="Signup"
             component={Signup}
-            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Profile"
+            component={Profile}
           />
         </Stack.Navigator>
       </NavigationContainer>

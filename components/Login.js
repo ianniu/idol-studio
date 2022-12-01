@@ -14,6 +14,7 @@ export default function Login({ navigation }) {
       Alert.alert(err.message);
       console.log(err.message);
     }
+    navigation.navigate("Home");
   };
   return (
     <View style={styles.authContent}>

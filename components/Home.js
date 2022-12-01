@@ -1,25 +1,19 @@
-import {
-  View,
-  StyleSheet,
-  TextInput,
-  Pressable,
-  FlatList,
-  Button,
-} from "react-native"
-import React, { useState, useEffect, useRef } from "react"
+import { View, StyleSheet, TextInput, Pressable, FlatList } from "react-native"
+import React, { useState, useEffect } from "react"
 import { Colors } from "../styles/Styles"
 import { Ionicons } from "@expo/vector-icons"
 import MusicItem from "./MusicItem"
 import { collection, onSnapshot } from "firebase/firestore"
 import { firestore } from "../firebase/firebase-setup"
-import { Audio } from "expo-av"
 import { StatusBar } from "expo-status-bar"
 import { SafeAreaView } from "react-native-safe-area-context"
+import { useDispatch } from "react-redux"
+import { setTrack, setCurrentIdx, setCurrentMusic } from "./Player/playerSlice"
 
 export default function Home() {
   const [searchText, setSearchText] = useState()
   const [songs, setSongs] = useState([])
-  const sound = useRef(new Audio.Sound())
+  const dispatch = useDispatch()
 
   // get musics
   useEffect(() => {
@@ -43,54 +37,10 @@ export default function Home() {
     return unsubscribe
   }, [])
 
-  useEffect(() => {
-    const configureAudio = async () => {
-      await Audio.setAudioModeAsync({
-        playsInSilentModeIOS: true,
-      })
-    }
-    configureAudio()
-  }, [])
-
-  const loadAudio = async () => {
-    // await sound.current.loadAsync({
-    //   uri: "https://firebasestorage.googleapis.com/v0/b/idol-studio.appspot.com/o/music%2F%E5%BF%BD%E7%84%B6.mp3?alt=media&token=e54fe3b1-9c78-43bf-9118-2660a75cc6fa",
-    // })
-    await sound.current.loadAsync(require("../assets/huran.mp3"))
-  }
-
-  const unloadAudio = async () => {
-    await sound.current.unloadAsync()
-  }
-
-  // load and unload audio
-  useEffect(() => {
-    loadAudio()
-    return () => unloadAudio()
-  }, [])
-
-  const playAudio = async () => {
-    try {
-      const status = await sound.current.getStatusAsync()
-      if (status.isLoaded) {
-        if (!status.isPlaying) {
-          await sound.current.playAsync()
-        }
-      }
-    } catch (e) {
-      console.log("play audio failed: ", e)
-    }
-  }
-
-  const pauseAudio = async () => {
-    try {
-      const status = await sound.current.getStatusAsync()
-      if (status.isLoaded) {
-        await sound.current.pauseAsync()
-      }
-    } catch (e) {
-      console.log("pause audio error: ", e)
-    }
+  const onPressMusicItem = (item, index) => {
+    dispatch(setTrack(songs))
+    dispatch(setCurrentIdx(index))
+    dispatch(setCurrentMusic(item))
   }
 
   return (
@@ -110,13 +60,22 @@ export default function Home() {
       <View style={styles.musicListWrapper}>
         <FlatList
           data={songs}
-          renderItem={(item, index, separators) => (
-            <MusicItem item={item.item} />
+          renderItem={({ item, index, separators }) => (
+            <Pressable
+              style={({ pressed }) => [
+                {
+                  backgroundColor: pressed
+                    ? Colors.greyTransparent
+                    : Colors.black1,
+                },
+              ]}
+              onPress={() => onPressMusicItem(item, index)}
+            >
+              <MusicItem item={item} />
+            </Pressable>
           )}
           keyExtractor={(item) => item.id}
         />
-        <Button title="play audio" onPress={playAudio} />
-        <Button title="pause audio" onPress={pauseAudio} />
       </View>
     </SafeAreaView>
   )

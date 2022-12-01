@@ -7,6 +7,7 @@ import Playlist from "./Playlist"
 import { Ionicons } from "@expo/vector-icons"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { StatusBar } from "expo-status-bar"
+import Player from "./Player/Player"
 
 const Tab = createBottomTabNavigator()
 
@@ -46,11 +47,11 @@ export default function Main() {
         style={{
           position: "absolute",
           transform: [
-            { translateY: HEIGHT - (insets.bottom + insets.top) - 34 },
+            { translateY: HEIGHT - (insets.bottom + insets.top) - 89 },
           ],
         }}
       >
-        <Text style={{ color: "white" }}>test</Text>
+        <Player />
       </View>
     </SafeAreaView>
   )

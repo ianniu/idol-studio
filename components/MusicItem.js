@@ -9,12 +9,7 @@ export default function MusicItem(props) {
   const { item } = props
 
   return (
-    <Pressable
-      style={({ pressed }) => [
-        styles.container,
-        { backgroundColor: pressed ? Colors.greyTransparent : Colors.black1 },
-      ]}
-    >
+    <View style={styles.container}>
       <View style={styles.textWrapper}>
         <Text style={styles.title}>{item.title}</Text>
         <Text style={styles.artist}>{item.artist}</Text>
@@ -27,7 +22,7 @@ export default function MusicItem(props) {
           <Feather name="plus" size={24} color={Colors.white1} />
         </Pressable>
       </View>
-    </Pressable>
+    </View>
   )
 }
 
@@ -35,7 +30,6 @@ const styles = StyleSheet.create({
   container: {
     display: "flex",
     minHeight: 80,
-    backgroundColor: Colors.grey1,
     flexDirection: "row",
     justifyContent: "space-between",
     width: Math.floor(WIDTH) - 10,

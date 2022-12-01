@@ -2,6 +2,7 @@ import { View, Text, TextInput, StyleSheet, Button, Alert } from "react-native";
 import React, { useState } from "react";
 import { auth } from "../firebase/firebase-setup";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { Colors } from "../styles/Styles"
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState(null);
@@ -20,7 +21,6 @@ export default function Login({ navigation }) {
     <View style={styles.authContent}>
       <Text style={styles.label}>Email Address</Text>
       <TextInput
-        placeholder="Email"
         style={styles.input}
         onChangeText={(newEmail) => setEmail(newEmail)}
         value={email}
@@ -32,7 +32,6 @@ export default function Login({ navigation }) {
         secureTextEntry={true}
         onChangeText={(newPass) => setPassword(newPass)}
         value={password}
-        placeholder="Password"
       />
       <View style={styles.button}>
         <Button title="Log In" onPress={handleLogin} />
@@ -52,12 +51,14 @@ const styles = StyleSheet.create({
     padding: 16,
     flex: 1,
     justifyContent: "center",
+    backgroundColor: Colors.black1,
   },
   inputContainer: {
     marginVertical: 8,
   },
   label: {
     marginBottom: 4,
+    color: Colors.white1,
   },
 
   input: {
@@ -65,8 +66,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     borderRadius: 4,
     fontSize: 16,
-    borderColor: "black",
+    borderColor: Colors.white1,
     borderWidth: 2,
+    color: Colors.white1,
   },
   button: {
     marginTop: 5,

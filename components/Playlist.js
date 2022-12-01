@@ -10,7 +10,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 export default function PlayList({ route, navigation }) {
   const [imageUri, setImageUri] = useState("https://user-images.githubusercontent.com/67746875/204928445-af19dc91-ed83-4aae-9351-cd096b5bac67.png");
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
-  const fakeData = [{ text: "Viva La Vida" }]
+  const fakeData = [{ text: "Playlist1", music: [{title: "Title", artist: "Artist"}]}]
   const [music, setMusic] = useState([])
   // useEffect(() => {
   //   const q = route.params.isImportant?
@@ -36,7 +36,9 @@ export default function PlayList({ route, navigation }) {
   //   };
   // }, []);
 
-  function itemPressed(music) {}
+  function itemPressed(list) {
+    navigation.navigate("PlaylistDetail", { listObject: list });
+  }
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {

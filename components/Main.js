@@ -6,12 +6,69 @@ import Home from "./Home"
 import Playlist from "./Playlist"
 import { Ionicons } from "@expo/vector-icons"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
-import { StatusBar } from "expo-status-bar"
 import Player from "./Player/Player"
+import { createNativeStackNavigator } from "@react-navigation/native-stack"
+import Login from "./Login"
+import Signup from "./Signup"
+import Profile from "./Profile"
+import PlaylistDetail from "./PlaylistDetail"
 
 const Tab = createBottomTabNavigator()
-
+const Stack = createNativeStackNavigator()
 const HEIGHT = Dimensions.get("window").height
+
+const StackScreen = () => {
+  return (
+    <Stack.Navigator initialRouteName="Playlist">
+      <Stack.Screen
+        name="Playlist"
+        component={Playlist}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Login"
+        component={Login}
+        options={{
+          headerStyle: { backgroundColor: Colors.black1 },
+          headerTintColor: Colors.white1,
+          headerTitleAlign: "center",
+        }}
+      />
+      <Stack.Screen
+        name="Signup"
+        component={Signup}
+        options={{
+          headerStyle: { backgroundColor: Colors.black1 },
+          headerTintColor: Colors.white1,
+          headerTitleAlign: "center",
+        }}
+      />
+      <Stack.Screen
+        name="Profile"
+        component={Profile}
+        options={{
+          headerStyle: { backgroundColor: Colors.black1 },
+          headerTintColor: Colors.white1,
+          headerTitleAlign: "center",
+        }}
+      />
+      <Stack.Screen
+        name="PlaylistDetail"
+        component={PlaylistDetail}
+        options={({ route }) => {
+          return {
+            title: route.params.listObject.text,
+            headerStyle: { backgroundColor: Colors.black1 },
+            headerTintColor: Colors.white1,
+            headerTitleAlign: "center",
+          }
+        }}
+      />
+    </Stack.Navigator>
+  )
+}
 
 export default function Main() {
   const insets = useSafeAreaInsets()
@@ -24,7 +81,7 @@ export default function Main() {
 
             if (route.name === "Home") {
               iconName = focused ? "home" : "home-outline"
-            } else if (route.name === "Playlist") {
+            } else if (route.name === "Other") {
               iconName = focused ? "list-circle" : "list-circle-outline"
             }
             return <Ionicons name={iconName} size={size} color={color} />
@@ -40,8 +97,8 @@ export default function Main() {
         })}
       >
         <Tab.Screen name="Home" component={Home} options={({ route }) => {}} />
-        <Tab.Screen name="Playlist" component={Playlist} />
-        <></>
+        {/* <Tab.Screen name="Playlist" component={Playlist} /> */}
+        <Tab.Screen name="Other" component={StackScreen} />
       </Tab.Navigator>
       <View
         style={{

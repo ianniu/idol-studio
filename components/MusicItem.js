@@ -1,9 +1,7 @@
-import { View, Text, StyleSheet, Dimensions, Pressable } from "react-native"
-import React from "react"
-import { Colors } from "../styles/Styles"
-import { Ionicons, Feather } from "@expo/vector-icons"
-
-const WIDTH = Dimensions.get("window").width
+import { View, Text, StyleSheet, Dimensions, Pressable } from 'react-native'
+import React from 'react'
+import { Colors, StandardWidth } from '../styles/Styles'
+import { Ionicons, Feather } from '@expo/vector-icons'
 
 export default function MusicItem(props) {
   const { item } = props
@@ -28,29 +26,29 @@ export default function MusicItem(props) {
 
 const styles = StyleSheet.create({
   container: {
-    display: "flex",
+    display: 'flex',
     minHeight: 80,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: Math.floor(WIDTH) - 10,
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: StandardWidth,
+    alignItems: 'center'
   },
   textWrapper: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column'
   },
   title: {
     color: Colors.white1,
     fontSize: 24,
-    fontWeight: "600",
+    fontWeight: '600'
   },
   artist: {
     color: Colors.white1,
     fontSize: 20,
-    fontWeight: "300",
+    fontWeight: '300'
   },
   iconsWrapper: {
-    display: "flex",
-    flexDirection: "row",
-  },
+    display: 'flex',
+    flexDirection: 'row'
+  }
 })

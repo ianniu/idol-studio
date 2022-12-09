@@ -1,17 +1,19 @@
-import { View, Text, TextInput, StyleSheet, Button, Alert } from "react-native"
-import React, { useState } from "react"
-import { auth } from "../firebase/firebase-setup"
-import { createUserWithEmailAndPassword } from "firebase/auth"
-import { Colors } from "../styles/Styles"
+import { View, Text, TextInput, StyleSheet, Button, Alert } from 'react-native'
+import React, { useState } from 'react'
+import { auth } from '../firebase/firebase-setup'
+import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { Colors } from '../styles/Styles'
+import { addPlaylistToDB } from '../firebase/firestore'
 
 export default function Signup({ navigation }) {
   const [email, setEmail] = useState(null)
   const [password, setPassword] = useState(null)
   const [confirmpassword, setConfirmPassword] = useState(null)
+
   const handleSignup = async () => {
     // some check here
     if (password.length < 6) {
-      Alert.alert("The password needs to be minimum 6 characters")
+      Alert.alert('The password needs to be minimum 6 characters')
       return
     }
     if (password !== confirmpassword) {
@@ -19,16 +21,16 @@ export default function Signup({ navigation }) {
       return
     }
     try {
-      const userCred = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      )
-      console.log(userCred)
+      const userCred = await createUserWithEmailAndPassword(auth, email, password)
+      const playlistData = {
+        name: 'My favorite',
+        musicContent: []
+      }
+      await addPlaylistToDB(playlistData)
     } catch (err) {
       console.log(err)
     }
-    navigation.navigate("Home")
+    navigation.navigate('Playlist')
   }
 
   return (
@@ -40,6 +42,7 @@ export default function Signup({ navigation }) {
         value={email}
         keyboardType="email-address"
         autoCapitalize="none"
+        autoCorrect={false}
       />
       <Text style={styles.label}>Password</Text>
       <TextInput
@@ -48,6 +51,7 @@ export default function Signup({ navigation }) {
         onChangeText={(newPass) => setPassword(newPass)}
         value={password}
         autoCapitalize="none"
+        autoCorrect={false}
       />
       <Text style={styles.label}>Confirm password</Text>
       <TextInput
@@ -56,12 +60,10 @@ export default function Signup({ navigation }) {
         onChangeText={(newPass) => setConfirmPassword(newPass)}
         value={confirmpassword}
         autoCapitalize="none"
+        autoCorrect={false}
       />
       <Button title="Register" onPress={handleSignup} />
-      <Button
-        title="Already Registered? Login"
-        onPress={() => navigation.replace("Login")}
-      />
+      <Button title="Already Registered? Login" onPress={() => navigation.replace('Login')} />
     </View>
   )
 }
@@ -70,15 +72,15 @@ const styles = StyleSheet.create({
   authContent: {
     padding: 16,
     flex: 1,
-    justifyContent: "center",
-    backgroundColor: Colors.black1,
+    justifyContent: 'center',
+    backgroundColor: Colors.black1
   },
   inputContainer: {
-    marginVertical: 8,
+    marginVertical: 8
   },
   label: {
     marginBottom: 4,
-    color: Colors.white1,
+    color: Colors.white1
   },
 
   input: {
@@ -88,6 +90,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderColor: Colors.white1,
     borderWidth: 2,
-    color: Colors.white1,
-  },
+    color: Colors.white1
+  }
 })

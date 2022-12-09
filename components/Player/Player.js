@@ -11,7 +11,11 @@ import {
   playNext,
   playPrevious,
   setCurrentProgress,
-  selectIsLooping
+  selectIsLooping,
+  selectIsShuffle,
+  playNextShuffle,
+  playPreviousShuffle,
+  setIsLooping
 } from './playerSlice'
 import { Audio } from 'expo-av'
 import PlayerModal from './PlayerModal'
@@ -23,6 +27,7 @@ const Player = () => {
   const isPlaying = useSelector(selectIsPlaying)
   const currentMusic = useSelector(selectCurrentMusic)
   const isLooping = useSelector(selectIsLooping)
+  const isShuffle = useSelector(selectIsShuffle)
   const dispatch = useDispatch()
   const sound = useRef(new Audio.Sound())
 
@@ -41,14 +46,20 @@ const Player = () => {
   }
 
   const loadMusicAndPlay = async () => {
-    if (!currentMusic || !currentMusic.url) return
-    await sound.current.loadAsync(
-      {
-        uri: currentMusic.url
-      },
-      { progressUpdateIntervalMillis: 50 }
-    )
-    playAudio()
+    try {
+      if (!currentMusic || !currentMusic.url) return
+      const status = await sound.current.getStatusAsync()
+      if (status.uri === currentMusic.url) return
+      await sound.current.loadAsync(
+        {
+          uri: currentMusic.url
+        },
+        { progressUpdateIntervalMillis: 50 }
+      )
+      playAudio()
+    } catch (e) {
+      console.log('loadMusicAndPlay error: ', e)
+    }
   }
 
   useEffect(() => {
@@ -82,9 +93,12 @@ const Player = () => {
         // TBD
       }
 
-      if (soundStatus.didJustFinish && !soundStatus.isLooping) {
+      if (soundStatus.didJustFinish) {
+        //  else if (!soundStatus.isLooping) {
+        // no shuffle, just play by order of the track
         // play the next song in the track
         playNextAudio()
+        // }
       }
     }
   }
@@ -119,13 +133,21 @@ const Player = () => {
 
   const playNextAudio = async () => {
     try {
-      if (isLooping) {
-        const status = await sound.current.getStatusAsync()
-        if (status.isLoaded) {
-          await sound.current.playFromPositionAsync(0)
+      if (!isShuffle) {
+        if (isLooping) {
+          const status = await sound.current.getStatusAsync()
+          if (status.isLoaded) {
+            await sound.current.playFromPositionAsync(0)
+          }
+          return
         }
+        dispatch(playNext())
+      } else {
+        if (isLooping) {
+          dispatch(setIsLooping(false))
+        }
+        dispatch(playNextShuffle())
       }
-      dispatch(playNext())
     } catch (e) {
       console.log('Play next audio error: ', e)
     }
@@ -133,13 +155,21 @@ const Player = () => {
 
   const playPreviousAudio = async () => {
     try {
-      if (isLooping) {
-        const status = await sound.current.getStatusAsync()
-        if (status.isLoaded) {
-          await sound.current.playFromPositionAsync(0)
+      if (!isShuffle) {
+        if (isLooping) {
+          const status = await sound.current.getStatusAsync()
+          if (status.isLoaded) {
+            await sound.current.playFromPositionAsync(0)
+          }
+          return
         }
+        dispatch(playPrevious())
+      } else {
+        if (isLooping) {
+          dispatch(setIsLooping(false))
+        }
+        dispatch(playPreviousShuffle())
       }
-      dispatch(playPrevious())
     } catch (e) {
       console.log('Play previous error: ', e)
     }

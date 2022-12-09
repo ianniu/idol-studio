@@ -1,25 +1,22 @@
-import { View, Text, StyleSheet, Pressable } from "react-native"
-import React from "react"
-import { Colors } from "../styles/Styles"
+import { View, Text, StyleSheet, Pressable } from 'react-native'
+import React from 'react'
+import { Colors } from '../styles/Styles'
 
-export default function PlaylistItem({ music, onItemPress }) {
+export default function PlaylistItem({ playlist, onItemPress }) {
   return (
-    <View style={styles.musicTextContainer}>
+    <View style={styles.playlistTextContainer}>
       <Pressable
         onPress={() => {
-          onItemPress(music)
+          onItemPress(playlist)
         }}
         android_ripple={{ color: Colors.ripple, foreground: true }}
         style={(obj) => {
           return obj.pressed && styles.pressedItem
         }}
       >
-        <View style={styles.musicWrapper}>
+        <View style={styles.playlistWrapper}>
           <View style={styles.textWrapper}>
-            <Text style={styles.musicText}> {music.text} </Text>
-          </View>
-          <View style={styles.numberWrapper}>
-            <Text style={styles.musicAmount}></Text>
+            <Text style={styles.playlistText}>{` ${playlist.name}`}</Text>
           </View>
         </View>
       </Pressable>
@@ -28,41 +25,29 @@ export default function PlaylistItem({ music, onItemPress }) {
 }
 
 const styles = StyleSheet.create({
-  musicTextContainer: {
+  playlistTextContainer: {
     margin: 8,
     borderRadius: 5,
     backgroundColor: Colors.grey1,
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center'
   },
   textWrapper: {
-    flex: 3,
+    flex: 3
   },
-  musicText: {
+  playlistText: {
     fontSize: 18,
     color: Colors.white1,
-    padding: 12,
-  },
-  numberWrapper: {
-    flex: 1,
-    backgroundColor: Colors.grey1,
-    margin: 3,
-    borderRadius: 5,
-  },
-  musicAmount: {
-    fontSize: 18,
-    color: Colors.white1,
-    padding: 12,
-    textAlign: "center",
+    padding: 12
   },
   pressedItem: {
     backgroundColor: Colors.greyTransparent,
     opacity: 0.5,
-    borderRadius: 5,
+    borderRadius: 5
   },
-  musicWrapper: {
-    flexDirection: "row",
-    width: 350,
-  },
+  playlistWrapper: {
+    flexDirection: 'row',
+    width: 350
+  }
 })

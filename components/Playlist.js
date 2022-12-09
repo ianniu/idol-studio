@@ -1,92 +1,76 @@
-import { StatusBar } from "expo-status-bar"
+import { StatusBar } from 'expo-status-bar'
+import { StyleSheet, View, SafeAreaView, FlatList, Button, Image, Pressable } from 'react-native'
+import { useState, useEffect } from 'react'
+import PlaylistItem from './PlaylistItem'
+import { auth } from '../firebase/firebase-setup'
+import { getPlaylistsFromDB } from '../firebase/firestore'
+import { Colors } from '../styles/Styles'
+import { onAuthStateChanged } from 'firebase/auth'
 import {
-  StyleSheet,
-  View,
-  SafeAreaView,
-  FlatList,
-  Button,
-  Image,
-  Pressable,
-} from "react-native"
-import { useState, useEffect } from "react"
-import PlaylistItem from "./PlaylistItem"
-import { firestore, auth } from "../firebase/firebase-setup"
-import { collection, query, where, onSnapshot } from "firebase/firestore"
-import { Colors } from "../styles/Styles"
-import { onAuthStateChanged } from "firebase/auth"
+  setPlaylists,
+  selectPlaylists,
+  selectAuthenticated,
+  setAuthenticated
+} from '../components/User/userSlice'
+import { useSelector, useDispatch } from 'react-redux'
 
 export default function PlayList({ route, navigation }) {
   const [imageUri, setImageUri] = useState(
-    "https://user-images.githubusercontent.com/67746875/204928445-af19dc91-ed83-4aae-9351-cd096b5bac67.png"
+    'https://user-images.githubusercontent.com/67746875/204928445-af19dc91-ed83-4aae-9351-cd096b5bac67.png'
   )
-  const [isUserAuthenticated, setIsUserAuthenticated] = useState(false)
-  const fakeData = [
-    { text: "My favorite", music: [{ title: "Title", artist: "Artist" }] },
-  ]
-  const [music, setMusic] = useState([])
-  // useEffect(() => {
-  //   const q = route.params.isImportant?
-  //     query(collection(firestore, "music"), where("isImportant", "==", true)):
-  //     collection(firestore, "music");
-  //   const unsubscribe = onSnapshot(
-  //     q, (querySnapshot) => {
-  //       if (querySnapshot.empty) {
-  //         setMusic([]);
-  //         return;
-  //       }
-  //       setMusic(
-  //         querySnapshot.docs.map((snapDoc) => {
-  //           let data = snapDoc.data();
-  //           data = { ...data, key: snapDoc.id };
-  //           return data;
-  //         })
-  //       );
-  //     }
-  //   );
-  //   return () => {
-  //     unsubscribe();
-  //   };
-  // }, []);
+  const dispatch = useDispatch()
+  const playlists = useSelector(selectPlaylists)
+  const authenticated = useSelector(selectAuthenticated)
 
-  function itemPressed(list) {
-    navigation.navigate("PlaylistDetail", { listObject: list })
+  function itemPressed(playlist) {
+    navigation.navigate('PlaylistDetail', { playlist: playlist })
   }
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        setIsUserAuthenticated(true)
+        dispatch(setAuthenticated(true))
       } else {
-        setIsUserAuthenticated(false)
+        dispatch(setAuthenticated(false))
       }
     })
   })
 
+  useEffect(() => {
+    const getPlaylists = async () => {
+      try {
+        if (!authenticated) return
+        const res = await getPlaylistsFromDB()
+        dispatch(setPlaylists(res))
+      } catch (e) {
+        console.log('Get playlist error: ', e)
+      }
+    }
+    getPlaylists()
+  }, [authenticated])
+
   const login = () => {
-    navigation.navigate("Login")
+    navigation.navigate('Login')
   }
   const signup = () => {
-    navigation.navigate("Signup")
+    navigation.navigate('Signup')
   }
   const gotoProfile = () => {
-    navigation.navigate("Profile")
+    navigation.navigate('Profile')
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      {isUserAuthenticated ? (
+      {authenticated ? (
         <>
           <Pressable onPress={gotoProfile}>
-            <Image
-              source={{ uri: imageUri }}
-              style={{ width: 100, height: 100 }}
-            />
+            <Image source={{ uri: imageUri }} style={{ width: 100, height: 100 }} />
           </Pressable>
           <View style={styles.bottomContainer}>
             <FlatList
-              data={fakeData}
+              data={playlists}
               renderItem={({ item }) => {
-                return <PlaylistItem music={item} onItemPress={itemPressed} />
+                return <PlaylistItem playlist={item} onItemPress={itemPressed} />
               }}
               contentContainerStyle={styles.scrollViewItems}
             ></FlatList>
@@ -95,10 +79,7 @@ export default function PlayList({ route, navigation }) {
       ) : (
         <>
           <Button title="Log in to view your playlists" onPress={login} />
-          <Button
-            title="Don't have an account yet? Register Now!"
-            onPress={signup}
-          />
+          <Button title="Don't have an account yet? Register Now!" onPress={signup} />
         </>
       )}
 
@@ -111,19 +92,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.black1,
-    justifyContent: "center",
+    justifyContent: 'center'
   },
   topContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   bottomContainer: {
     flex: 4,
     backgroundColor: Colors.black1,
-    marginTop: 20,
+    marginTop: 20
   },
   scrollViewItems: {
-    alignItems: "center",
-  },
+    alignItems: 'center'
+  }
 })

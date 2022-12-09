@@ -59,7 +59,7 @@ const StackScreen = () => {
         component={PlaylistDetail}
         options={({ route }) => {
           return {
-            title: route.params.listObject.text,
+            title: route.params.playlist.name,
             headerStyle: { backgroundColor: Colors.black1 },
             headerTintColor: Colors.white1,
             headerTitleAlign: 'center'
@@ -73,40 +73,42 @@ const StackScreen = () => {
 export default function Main() {
   const insets = useSafeAreaInsets()
   return (
-    <SafeAreaView style={styles.container}>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <>
+        <Tab.Navigator
+          screenOptions={({ route }) => ({
+            tabBarIcon: ({ focused, color, size }) => {
+              let iconName
 
-            if (route.name === 'Home') {
-              iconName = focused ? 'home' : 'home-outline'
-            } else if (route.name === 'Other') {
-              iconName = focused ? 'list-circle' : 'list-circle-outline'
-            }
-            return <Ionicons name={iconName} size={size} color={color} />
-          },
-          tabBarShowLabel: false,
-          headerShown: false,
-          tabBarStyle: {
-            backgroundColor: Colors.grey1,
-            borderColor: Colors.grey1
-          },
-          tabBarActiveTintColor: Colors.white1,
-          tabBarInactiveTintColor: Colors.white1
-        })}
-      >
-        <Tab.Screen name="Home" component={Home} />
-        <Tab.Screen name="Other" component={StackScreen} />
-      </Tab.Navigator>
-      <View
-        style={{
-          position: 'absolute',
-          transform: [{ translateY: HEIGHT - (insets.bottom + insets.top) - 89 }]
-        }}
-      >
-        <Player />
-      </View>
+              if (route.name === 'Home') {
+                iconName = focused ? 'home' : 'home-outline'
+              } else if (route.name === 'Other') {
+                iconName = focused ? 'list-circle' : 'list-circle-outline'
+              }
+              return <Ionicons name={iconName} size={size} color={color} />
+            },
+            tabBarShowLabel: false,
+            headerShown: false,
+            tabBarStyle: {
+              backgroundColor: Colors.grey1,
+              borderColor: Colors.grey1
+            },
+            tabBarActiveTintColor: Colors.white1,
+            tabBarInactiveTintColor: Colors.white1
+          })}
+        >
+          <Tab.Screen name="Home" component={Home} />
+          <Tab.Screen name="Other" component={StackScreen} />
+        </Tab.Navigator>
+        <View
+          style={{
+            position: 'absolute',
+            transform: [{ translateY: HEIGHT - (insets.bottom + insets.top) - 55 }]
+          }}
+        >
+          <Player />
+        </View>
+      </>
     </SafeAreaView>
   )
 }

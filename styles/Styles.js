@@ -7,7 +7,8 @@ export const Colors = {
   grey2: '#4f4f4f',
   grey3: '#afb0b3',
   white1: '#F7F7F7',
-  ripple: '#223355'
+  ripple: '#223355',
+  pink1: '#d36baa'
 }
 
 const WIDTH = Dimensions.get('window').width

@@ -1,4 +1,4 @@
-import { View, Text, Modal, StyleSheet, Pressable } from 'react-native'
+import { View, Text, Modal, StyleSheet, Pressable, Dimensions } from 'react-native'
 import React from 'react'
 import { Colors } from '../../styles/Styles'
 import { Ionicons, MaterialIcons } from '@expo/vector-icons'
@@ -9,10 +9,17 @@ import {
   selectIsPlaying,
   selectCurrentProgress,
   selectIsLooping,
-  setIsLooping
+  setIsLooping,
+  setIsShuffle,
+  selectIsShuffle,
+  selectTrack,
+  setShuffledTrack
 } from './playerSlice'
 import Slider from '@react-native-community/slider'
-import { durationToTime } from '../../common/Method'
+import { durationToTime, shuffle } from '../../common/Method'
+import NotificationManager from '../NotificationManager'
+
+const { height, width } = Dimensions.get('window')
 
 const PlayerModal = (props) => {
   const {
@@ -28,6 +35,8 @@ const PlayerModal = (props) => {
   const isPlaying = useSelector(selectIsPlaying)
   const currentProgress = useSelector(selectCurrentProgress)
   const isLooping = useSelector(selectIsLooping)
+  const isShuffle = useSelector(selectIsShuffle)
+  const track = useSelector(selectTrack)
   const dispatch = useDispatch()
 
   const handleSliding = async (value) => {
@@ -62,10 +71,25 @@ const PlayerModal = (props) => {
     }
   }
 
+  const setToShuffle = async () => {
+    dispatch(setIsShuffle(true))
+    if (isLooping) {
+      dispatch(setIsLooping(false))
+    }
+    const shuffledTrack = [...track]
+    shuffle(shuffledTrack)
+    dispatch(setShuffledTrack(shuffledTrack))
+  }
+
+  const setToNotShuffle = async () => {
+    dispatch(setIsShuffle(false))
+    dispatch(setShuffledTrack(track))
+  }
+
   return (
     <Modal onShow={false} animationType="slide" visible={showPlayerModal}>
       <SafeAreaView style={styles.container}>
-        <View style={styles.returnBtn}>
+        <View style={styles.returnBtnWrapper}>
           <Pressable
             onPress={() => {
               setShowPlayerModal(false)
@@ -84,7 +108,7 @@ const PlayerModal = (props) => {
             />
           </View>
         </View>
-        <View style={styles.bottomPart}>
+        <View style={styles.lowerPart}>
           <View style={styles.textWrapper}>
             <Text style={styles.title}>{currentMusic ? currentMusic.title : 'Unknown'}</Text>
             <Text style={styles.artist}>
@@ -112,9 +136,16 @@ const PlayerModal = (props) => {
             </View>
           </View>
           <View style={styles.controllerWrapper}>
-            <Pressable>
-              <Ionicons name="shuffle" size={30} color={Colors.white1} />
-            </Pressable>
+            {isShuffle && (
+              <Pressable onPress={setToNotShuffle}>
+                <Ionicons name="shuffle" size={30} color={Colors.pink1} />
+              </Pressable>
+            )}
+            {!isShuffle && (
+              <Pressable onPress={setToShuffle}>
+                <Ionicons name="shuffle" size={30} color={Colors.white1} />
+              </Pressable>
+            )}
             <Pressable
               style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
               onPress={playPreviousAudio}
@@ -148,7 +179,7 @@ const PlayerModal = (props) => {
                 style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
                 onPress={setToNotLooping}
               >
-                <MaterialIcons name="repeat-one" size={30} color={Colors.white1} />
+                <MaterialIcons name="repeat-one" size={30} color={Colors.pink1} />
               </Pressable>
             )}
             {!isLooping && (
@@ -156,9 +187,12 @@ const PlayerModal = (props) => {
                 style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
                 onPress={setToLooping}
               >
-                <Ionicons name="repeat" size={30} color={Colors.white1} />
+                <Ionicons name="repeat" size={30} color={Colors.pink1} />
               </Pressable>
             )}
+          </View>
+          <View style={styles.bottomRow}>
+            <NotificationManager />
           </View>
         </View>
       </SafeAreaView>
@@ -170,31 +204,32 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.grey1,
-    paddingTop: 40
+    paddingTop: (120 / 1920) * height
   },
-  returnBtn: {
-    marginLeft: 15
+  returnBtnWrapper: {
+    marginLeft: 15,
+    flex: 0.6
   },
   coverWrapper: {
-    marginTop: 50,
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
+    flex: 1.7
   },
   coverBase: {
     backgroundColor: Colors.grey2,
-    height: 280,
-    width: 280,
+    minHeight: 280,
+    minWidth: 280,
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center'
   },
-  bottomPart: {
-    marginHorizontal: 20
+  lowerPart: {
+    marginHorizontal: 20,
+    flex: 1.5
   },
   textWrapper: {
     display: 'flex',
-    flexDirection: 'column',
-    marginTop: 30
+    flexDirection: 'column'
   },
   title: {
     color: Colors.white1,
@@ -224,6 +259,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 10,
     alignItems: 'center'
+  },
+  bottomRow: {
+    marginTop: 10
   }
 })
 

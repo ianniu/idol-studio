@@ -5,4 +5,15 @@ import {
   updateDoc,
   doc,
 } from "firebase/firestore"
-import { firestore } from "./firebase-setup"
+import { firestore, auth } from "./firebase-setup";
+
+export async function writeToDB(photo) {
+  try {
+    const docRef = await addDoc(collection(firestore, "photo"), {
+      ...photo,
+      user: auth.currentUser.uid,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+}

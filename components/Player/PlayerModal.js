@@ -2,7 +2,7 @@ import { View, Text, Modal, StyleSheet, Pressable, Dimensions } from 'react-nati
 import React from 'react'
 import { Colors } from '../../styles/Styles'
 import { Ionicons, MaterialIcons } from '@expo/vector-icons'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   selectCurrentMusic,
@@ -20,6 +20,8 @@ import { durationToTime, shuffle } from '../../common/Method'
 import NotificationManager from '../NotificationManager'
 
 const { height, width } = Dimensions.get('window')
+// device width logic pixel / UI Design width
+const adaptionRatio = width / 375
 
 const PlayerModal = (props) => {
   const {
@@ -38,6 +40,7 @@ const PlayerModal = (props) => {
   const isShuffle = useSelector(selectIsShuffle)
   const track = useSelector(selectTrack)
   const dispatch = useDispatch()
+  const insets = useSafeAreaInsets()
 
   const handleSliding = async (value) => {
     try {
@@ -88,7 +91,7 @@ const PlayerModal = (props) => {
 
   return (
     <Modal onShow={false} animationType="slide" visible={showPlayerModal}>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { paddingTop: insets.top + 10 }]}>
         <View style={styles.returnBtnWrapper}>
           <Pressable
             onPress={() => {
@@ -108,7 +111,7 @@ const PlayerModal = (props) => {
             />
           </View>
         </View>
-        <View style={styles.lowerPart}>
+        <View style={[styles.lowerPartWrapper, { marginBottom: insets.bottom + 10 }]}>
           <View style={styles.textWrapper}>
             <Text style={styles.title}>{currentMusic ? currentMusic.title : 'Unknown'}</Text>
             <Text style={styles.artist}>
@@ -204,16 +207,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.grey1,
-    paddingTop: (120 / 1920) * height
+    display: 'flex',
+    justifyContent: 'space-between'
   },
   returnBtnWrapper: {
-    marginLeft: 15,
-    flex: 0.6
+    marginLeft: 15
   },
   coverWrapper: {
     display: 'flex',
-    alignItems: 'center',
-    flex: 1.7
+    alignItems: 'center'
   },
   coverBase: {
     backgroundColor: Colors.grey2,
@@ -223,9 +225,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  lowerPart: {
-    marginHorizontal: 20,
-    flex: 1.5
+  lowerPartWrapper: {
+    marginHorizontal: 20
   },
   textWrapper: {
     display: 'flex',

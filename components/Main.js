@@ -15,7 +15,7 @@ import PlaylistDetail from './PlaylistDetail'
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
-const HEIGHT = Dimensions.get('window').height
+const { height } = Dimensions.get('window')
 
 const StackScreen = () => {
   return (
@@ -74,41 +74,39 @@ export default function Main() {
   const insets = useSafeAreaInsets()
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <>
-        <Tab.Navigator
-          screenOptions={({ route }) => ({
-            tabBarIcon: ({ focused, color, size }) => {
-              let iconName
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName
 
-              if (route.name === 'Home') {
-                iconName = focused ? 'home' : 'home-outline'
-              } else if (route.name === 'Other') {
-                iconName = focused ? 'list-circle' : 'list-circle-outline'
-              }
-              return <Ionicons name={iconName} size={size} color={color} />
-            },
-            tabBarShowLabel: false,
-            headerShown: false,
-            tabBarStyle: {
-              backgroundColor: Colors.grey1,
-              borderColor: Colors.grey1
-            },
-            tabBarActiveTintColor: Colors.white1,
-            tabBarInactiveTintColor: Colors.white1
-          })}
-        >
-          <Tab.Screen name="Home" component={Home} />
-          <Tab.Screen name="Other" component={StackScreen} />
-        </Tab.Navigator>
-        <View
-          style={{
-            position: 'absolute',
-            transform: [{ translateY: HEIGHT - (insets.bottom + insets.top) - 55 }]
-          }}
-        >
-          <Player />
-        </View>
-      </>
+            if (route.name === 'Home') {
+              iconName = focused ? 'home' : 'home-outline'
+            } else if (route.name === 'Other') {
+              iconName = focused ? 'list-circle' : 'list-circle-outline'
+            }
+            return <Ionicons name={iconName} size={size} color={color} />
+          },
+          tabBarShowLabel: false,
+          headerShown: false,
+          tabBarStyle: {
+            backgroundColor: Colors.grey1,
+            borderColor: Colors.grey1
+          },
+          tabBarActiveTintColor: Colors.white1,
+          tabBarInactiveTintColor: Colors.white1
+        })}
+      >
+        <Tab.Screen name="Home" component={Home} />
+        <Tab.Screen name="Other" component={StackScreen} />
+      </Tab.Navigator>
+      <View
+        style={{
+          position: 'absolute',
+          bottom: height >= 812 ? insets.bottom + 45 : 50
+        }}
+      >
+        <Player />
+      </View>
     </SafeAreaView>
   )
 }

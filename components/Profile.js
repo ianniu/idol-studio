@@ -4,6 +4,7 @@ import * as ImagePicker from "expo-image-picker"
 import { onAuthStateChanged, signOut } from "firebase/auth"
 import { firestore, auth } from "../firebase/firebase-setup"
 import { Colors } from "../styles/Styles"
+import LocationManager from "./LocationManager"
 
 export default function Profile({ navigation }) {
   const [permissionInfo, requestPermission] = ImagePicker.useCameraPermissions()
@@ -40,6 +41,7 @@ export default function Profile({ navigation }) {
       <Image source={{ uri: imageUri }} style={{ width: 100, height: 100 }} />
       <Button title="Take an Image" onPress={takeImageHandler} />
       <Text style={styles.text}>{auth.currentUser.email}</Text>
+      <LocationManager />
       <Button title="Log out" onPress={logout} />
     </View>
   )

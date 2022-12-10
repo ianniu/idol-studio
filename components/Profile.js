@@ -1,4 +1,4 @@
-import { View, Image, StyleSheet, Button, Text } from "react-native"
+import { View, Image, StyleSheet, Button, Text, Alert } from "react-native"
 import React, { useState, useEffect } from "react"
 import * as ImagePicker from "expo-image-picker"
 import { onAuthStateChanged, signOut } from "firebase/auth"
@@ -64,6 +64,7 @@ export default function Profile({ navigation }) {
   }
   const uploadHandler = async () => {
     uploadImage(imageUri)
+    Alert.alert("Profile Picture Set")
   }
 
   const getImage = async (uri) => {

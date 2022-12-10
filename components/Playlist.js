@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar'
 import { StyleSheet, View, SafeAreaView, FlatList, Button, Image, Pressable } from 'react-native'
 import { useState, useEffect } from 'react'
 import PlaylistItem from './PlaylistItem'
-import { auth } from '../firebase/firebase-setup'
+import { firestore, auth, storage  } from "../firebase/firebase-setup"
 import { getPlaylistsFromDB } from '../firebase/firestore'
 import { Colors } from '../styles/Styles'
 import { onAuthStateChanged } from 'firebase/auth'
@@ -13,6 +13,8 @@ import {
   setAuthenticated
 } from '../components/User/userSlice'
 import { useSelector, useDispatch } from 'react-redux'
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { ref, getDownloadURL } from "firebase/storage";
 
 export default function PlayList({ route, navigation }) {
   const [imageUri, setImageUri] = useState(
@@ -21,6 +23,34 @@ export default function PlayList({ route, navigation }) {
   const dispatch = useDispatch()
   const playlists = useSelector(selectPlaylists)
   const authenticated = useSelector(selectAuthenticated)
+  const [userPhoto, setUserPhoto] = useState()
+
+  useEffect(() => {
+    const q = query(collection(firestore, "photo"), where("user", "==", auth.currentUser.uid))
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        setUserPhoto(doc.data())
+      });
+    });
+    return () => {
+      unsubscribe()
+    };
+  }, []);
+
+  useEffect(() => {
+    const getImageURL = async () => {
+      try {
+        if (userPhoto) {
+          const reference = ref(storage, userPhoto.uri);
+          const downloadImageURL = await getDownloadURL(reference);
+          setImageUri(downloadImageURL);
+        }
+      } catch (err) {
+        console.log("download image ", err);
+      }
+    };
+    getImageURL()
+  }, [userPhoto])
 
   function itemPressed(playlist) {
     navigation.navigate('PlaylistDetail', { playlist: playlist })
@@ -64,7 +94,7 @@ export default function PlayList({ route, navigation }) {
       {authenticated ? (
         <>
           <Pressable onPress={gotoProfile}>
-            <Image source={{ uri: imageUri }} style={{ width: 100, height: 100 }} />
+            <Image source={{ uri: imageUri }} style={{ borderRadius: 50, width: 100, height: 100 }} />
           </Pressable>
           <View style={styles.bottomContainer}>
             <FlatList

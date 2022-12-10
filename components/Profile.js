@@ -1,16 +1,48 @@
 import { View, Image, StyleSheet, Button, Text } from "react-native"
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import * as ImagePicker from "expo-image-picker"
 import { onAuthStateChanged, signOut } from "firebase/auth"
-import { firestore, auth } from "../firebase/firebase-setup"
+import { firestore, auth, storage  } from "../firebase/firebase-setup"
 import { Colors } from "../styles/Styles"
 import LocationManager from "./LocationManager"
+import { writeToDB } from "../firebase/firestore";
+import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
 
 export default function Profile({ navigation }) {
   const [permissionInfo, requestPermission] = ImagePicker.useCameraPermissions()
   const [imageUri, setImageUri] = useState(
     "https://user-images.githubusercontent.com/67746875/204928445-af19dc91-ed83-4aae-9351-cd096b5bac67.png"
   )
+  const [userPhoto, setUserPhoto] = useState()
+
+  useEffect(() => {
+    const q = query(collection(firestore, "photo"), where("user", "==", auth.currentUser.uid))
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        setUserPhoto(doc.data())
+      });
+    });
+    return () => {
+      unsubscribe()
+    };
+  }, []);
+
+  useEffect(() => {
+    const getImageURL = async () => {
+      try {
+        if (userPhoto) {
+          const reference = ref(storage, userPhoto.uri);
+          const downloadImageURL = await getDownloadURL(reference);
+          setImageUri(downloadImageURL);
+        }
+      } catch (err) {
+        console.log("download image ", err);
+      }
+    };
+    getImageURL()
+  }, [userPhoto])
+
   const verifyPermission = async () => {
     if (permissionInfo.granted) {
       return true
@@ -25,11 +57,39 @@ export default function Profile({ navigation }) {
         return
       }
       const result = await ImagePicker.launchCameraAsync()
-      setImageUri(result.uri)
+      setImageUri(result.assets[0].uri)
     } catch (err) {
       console.log("Image taking error ", err)
     }
   }
+  const uploadHandler = async () => {
+    uploadImage(imageUri)
+  }
+
+  const getImage = async (uri) => {
+    try {
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      return blob;
+    } catch (err) {
+      console.log("fetch image ", err);
+    }
+  };
+  const uploadImage = async function (uri) {
+    try {
+      if (uri) {
+        const imageBlob = await getImage(uri);
+        const imageName = uri.substring(uri.lastIndexOf("/") + 1);
+        const imageRef = ref(storage, `images/${imageName}`);
+        const uploadResult = await uploadBytes(imageRef, imageBlob);
+        uri = uploadResult.metadata.fullPath; //replaced the uri with reference to the storage location
+      }
+      const newObj = {uri: uri}
+      await writeToDB(newObj);
+    } catch (err) {
+      console.log("image upload ", err);
+    }
+  };
 
   const logout = () => {
     signOut(auth)
@@ -38,8 +98,9 @@ export default function Profile({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Image source={{ uri: imageUri }} style={{ width: 100, height: 100 }} />
-      <Button title="Take an Image" onPress={takeImageHandler} />
+      <Image source={{ uri: imageUri }} style={{ borderRadius: 50, width: 100, height: 100 }} />
+      <Button title="Take an Picture" onPress={takeImageHandler} />
+      <Button title="Set as Profile Picture" onPress={uploadHandler} />
       <Text style={styles.text}>{auth.currentUser.email}</Text>
       <LocationManager />
       <Button title="Log out" onPress={logout} />

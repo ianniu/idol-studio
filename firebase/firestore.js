@@ -32,3 +32,14 @@ export const updatePlaylistsInDB = async (playlists) => {
     console.log(e)
   }
 }
+
+export async function writeToDB(photo) {
+  try {
+    const docRef = await addDoc(collection(firestore, "photo"), {
+      ...photo,
+      user: auth.currentUser.uid,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+}

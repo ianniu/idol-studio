@@ -5,9 +5,9 @@ import { onAuthStateChanged, signOut } from "firebase/auth"
 import { firestore, auth, storage  } from "../firebase/firebase-setup"
 import { Colors } from "../styles/Styles"
 import LocationManager from "./LocationManager"
-import { writeToDB } from "../firebase/firestore";
-import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
-import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { writePhotoToDB, updatePhotoInDB } from "../firebase/firestore"
+import { ref, getDownloadURL, uploadBytes } from "firebase/storage"
+import { collection, query, where, onSnapshot } from 'firebase/firestore'
 
 export default function Profile({ navigation }) {
   const [permissionInfo, requestPermission] = ImagePicker.useCameraPermissions()
@@ -20,26 +20,26 @@ export default function Profile({ navigation }) {
     const q = query(collection(firestore, "photo"), where("user", "==", auth.currentUser.uid))
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        setUserPhoto(doc.data())
-      });
-    });
+        setUserPhoto({ ...doc.data(), key: doc.id })
+      })
+    })
     return () => {
       unsubscribe()
-    };
-  }, []);
+    }
+  }, [])
 
   useEffect(() => {
     const getImageURL = async () => {
       try {
         if (userPhoto) {
-          const reference = ref(storage, userPhoto.uri);
-          const downloadImageURL = await getDownloadURL(reference);
-          setImageUri(downloadImageURL);
+          const reference = ref(storage, userPhoto.uri)
+          const downloadImageURL = await getDownloadURL(reference)
+          setImageUri(downloadImageURL)
         }
       } catch (err) {
-        console.log("download image ", err);
+        console.log("download image ", err)
       }
-    };
+    }
     getImageURL()
   }, [userPhoto])
 
@@ -63,34 +63,38 @@ export default function Profile({ navigation }) {
     }
   }
   const uploadHandler = async () => {
-    uploadImage(imageUri)
+    await uploadImage(imageUri)
     Alert.alert("Profile Picture Set")
   }
 
   const getImage = async (uri) => {
     try {
-      const response = await fetch(uri);
-      const blob = await response.blob();
-      return blob;
+      const response = await fetch(uri)
+      const blob = await response.blob()
+      return blob
     } catch (err) {
-      console.log("fetch image ", err);
+      console.log("fetch image ", err)
     }
-  };
+  }
   const uploadImage = async function (uri) {
     try {
       if (uri) {
-        const imageBlob = await getImage(uri);
-        const imageName = uri.substring(uri.lastIndexOf("/") + 1);
-        const imageRef = ref(storage, `images/${imageName}`);
-        const uploadResult = await uploadBytes(imageRef, imageBlob);
-        uri = uploadResult.metadata.fullPath; //replaced the uri with reference to the storage location
+        const imageBlob = await getImage(uri)
+        const imageName = uri.substring(uri.lastIndexOf("/") + 1)
+        const imageRef = ref(storage, `images/${imageName}`)
+        const uploadResult = await uploadBytes(imageRef, imageBlob)
+        uri = uploadResult.metadata.fullPath
       }
       const newObj = {uri: uri}
-      await writeToDB(newObj);
+      if (userPhoto) {
+        await updatePhotoInDB(newObj, userPhoto.key)
+      } else {
+        await writePhotoToDB(newObj)
+      }
     } catch (err) {
-      console.log("image upload ", err);
+      console.log("image upload ", err)
     }
-  };
+  }
 
   const logout = () => {
     signOut(auth)

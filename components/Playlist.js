@@ -16,7 +16,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { collection, query, where, onSnapshot } from 'firebase/firestore'
 import { ref, getDownloadURL } from 'firebase/storage'
 
-export default function PlayList({ route, navigation }) {
+export default function Playlist({ route, navigation }) {
   const [imageUri, setImageUri] = useState(
     'https://user-images.githubusercontent.com/67746875/204928445-af19dc91-ed83-4aae-9351-cd096b5bac67.png'
   )
@@ -26,16 +26,18 @@ export default function PlayList({ route, navigation }) {
   const [userPhoto, setUserPhoto] = useState()
 
   useEffect(() => {
-    const q = query(collection(firestore, 'photo'), where('user', '==', auth.currentUser.uid))
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        setUserPhoto(doc.data())
+    if (auth.currentUser) {
+      const q = query(collection(firestore, 'photo'), where('user', '==', auth.currentUser.uid))
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          setUserPhoto(doc.data())
+        })
       })
-    })
-    return () => {
-      unsubscribe()
+      return () => {
+        unsubscribe()
+      }
     }
-  }, [])
+  }, [auth.currentUser])
 
   useEffect(() => {
     const getImageURL = async () => {
